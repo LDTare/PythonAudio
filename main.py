@@ -1,6 +1,10 @@
 #Importaciones para UI
+from ctypes import alignment
+from sqlite3 import Row
 from tkinter import *
 from tkinter import filedialog
+from tkinter import messagebox as Messagebox
+from turtle import left, position
 
 #Importaciones de clases para funciones
 import numpy as np
@@ -14,6 +18,8 @@ root = Tk()
 
 Ruta = ""
 
+root.title("Teoria de sistemas")
+
 def SeleccionArchivos(): #Funcion para seleccionar archivos
     global filename
     #Filtro para seleccionar unicamente archivos MP3, WAV y OGG
@@ -21,6 +27,7 @@ def SeleccionArchivos(): #Funcion para seleccionar archivos
     global Ruta
     #Almacenamiento de la ruta en una variable
     Ruta = filename
+    Messagebox.showinfo('Seleccion de Archivos', 'Archivo seleccionado: ' + Ruta)
 
 def PlayArchivo(): #Reproducir el archivo
     subprocess.call(['ffmpeg', '-y' , '-i', Ruta, 'test.wav']) #Conversion a WAV
@@ -72,9 +79,7 @@ def Alteracion(): #Aumento de la intensidad del archivo
     x, fs = sf.read('test.wav', dtype='float32')
 
     Data = float(valor.get()) #Lectura de la cantidad para aumentar desde el input
-    Data = 5 + Data/100 #Limite de aumento nota peronal: duele mucho cuando no lo tiene mas si llega a 100
-
-    print(Data)
+    Data = 1 + Data/100 #Limite de aumento nota peronal: duele mucho cuando no lo tiene mas si llega a 100
 
     canal1 = np.array(x[0:len(x), 0]) #Almacenamiento de los valores en la fila 1 del muestreo
     canal2 = np.array(x[0:len(x), 1]) #Almacenamiento de los valores en la fila 2 del muestreo
@@ -88,6 +93,8 @@ def Alteracion(): #Aumento de la intensidad del archivo
     cntemp2 = cntemp2.reshape(len(cntemp2), 1)  #se cambia la dimencion del arreglo
 
     y = np.append(cntemp1, cntemp2, axis=1) #Se vuelven a unir los canales
+
+    print("Escuhando la cancion incrementada en " + Data)
 
     print('En reproducción: Canción aumentada')
     sd.play(y,fs)
@@ -109,6 +116,8 @@ def Decremento():
  
     cntemp1 = cntemp1.reshape(len(cntemp1), 1) #se cambia la dimencion del arreglo
     cntemp2 = cntemp2.reshape(len(cntemp2), 1) #se cambia la dimencion del arreglo
+
+    print("Escuchando la cancion disminuida a " + Data)
 
     y = np.append(cntemp1, cntemp2, axis=1) #Se vuelven a unir los canales
  
@@ -165,38 +174,40 @@ def Efecto(): #Efecto prueba
 #Codigo de Componentes
 
 #Mensajes de Bienvenida y final de la UI
-Bienvenida = Label(root, text="Proyecto Corto #1 Teoria de sistemas", pady=5, padx=5)
-Footer = Label(root, text="Estudiantes", padx=5, pady=5)
+Bienvenida = Label(root, text="Proyecto Corto #1", pady=5, padx=5, font=("Arial", 12))
+Footer = Label(root, text="Estudiantes", font=("Arial",10), padx=5, pady=5)
 
 #Seleccion de archivo
-SeleccionMSG = Label(root, text="Seleccion de archivo")
-BTNSeleccion = Button(root, text="Seleccionar un archivo", command= SeleccionArchivos)
+SeleccionMSG = Label(root, text="Seleccion de archivo", font=("Arial",10))
+BTNSeleccion = Button(root, text="Seleccionar un archivo",font=("Arial",10), relief="groove", command= SeleccionArchivos)
 
 #Reproduccion del archivo
-AudioName = Label(root, text=Ruta)
-BTNReproduccion = Button(root, text="Reproducir archivo", command=PlayArchivo)
-BTNParar = Button(root, text="Detener Reproduccion", command= StopArchivo)
+AudioName = Label(root, text=Ruta, font=("Arial",10))
+BTNReproduccion = Button(root, text="Reproducir archivo", font=("Arial",10), relief="groove", command=PlayArchivo)
+BTNParar = Button(root, text="Detener Reproduccion", font=("Arial",10), relief="groove", command= StopArchivo)
 
 #invertir matriz
-BTNInverCanales = Button(root, text="Invertir canales", command=InvertirCanales)
+LabelInv = Label(root, text="Invertir canales", font=("Arial",10))
+BTNInverCanales = Button(root, text="Invertir canales", font=("Arial",10), relief="groove", command=InvertirCanales)
 
 #reflejar matriz
-BTMReflejar = Button(root, text="Reflejar canales", command=ReflejarCanales)
+LabelRFL = Label(root, text="Reflejar canales de audio", font=("Arial",10))
+BTMReflejar = Button(root, text="Reflejar canales", font=("Arial",10), relief="groove", command=ReflejarCanales)
 
 #Alteracion de intensidad
-LabelAlt1 = Label(root, text="Alteracion de intensidad")
-valor = INPcantidad = Entry(root, width=5)
-BTNaumentar = Button(root, text="Aumentar", command=Alteracion)
-BTNDecrementar = Button(root, text="Reducir", command=Decremento)
+LabelAlt1 = Label(root, text="Alteracion de intensidad", font=("Arial",10))
+valor = INPcantidad = Entry(root, width=15, font=("Arial",10))
+BTNaumentar = Button(root, text="Aumentar", font=("Arial",10), relief="groove", command=Alteracion)
+BTNDecrementar = Button(root, text="Reducir", font=("Arial",10), relief="groove", command=Decremento)
 
 #Extraccion
-LabelExt = Label(root, text="Corte de fragmento")
+LabelExt = Label(root, text="Corte de fragmento", font=("Arial",10))
 DesdeINP = Entry(root, width=25)
 HastaINP = Entry(root, width=25)
-BTNCortar = Button(root, text="Recortar", command=Recorte)
+BTNCortar = Button(root, text="Recortar", font=("Arial",10), relief="groove", command=Recorte)
 
 #Efecto
-BTnEfecto = Button(root, text="Efecto", command= Efecto)
+BTnEfecto = Button(root, text="Efecto", font=("Arial",10), relief="groove", command= Efecto)
 
 #Ordenamiento del UI
 Bienvenida.grid(row=0, column=1)
@@ -206,31 +217,32 @@ SeleccionMSG.grid(row=1, column=0)
 BTNSeleccion.grid(row=1, column=1)
 
 #Reproduccion
-AudioName.grid(row=2, column=0)
-BTNReproduccion.grid(row=3, column=1)
-BTNParar.grid(row=3, column=2)
+AudioName.grid(row=2, column=0, padx=10)
+BTNReproduccion.grid(row=3, column=1, padx=10)
+BTNParar.grid(row=3, column=2, padx=10)
 
 #Inversion
-BTNInverCanales.grid(row=4, column=2)
+LabelInv.grid(row=4, column=0, pady=15)
+BTNInverCanales.grid(row=4, column=1, pady=15)
 
 #Refleccion
-BTMReflejar.grid(row=5, column=2)
+LabelRFL.grid(row=5, column=0, pady=25)
+BTMReflejar.grid(row=5, column=1, pady=25)
 
 #Alteracion
-LabelAlt1.grid(row=6, column=0)
-INPcantidad.grid(row=6, column=1)
-BTNaumentar.grid(row=6, column=2)
-BTNDecrementar.grid(row=7, column=2)
+LabelAlt1.grid(row=6, column=0, pady=10)
+INPcantidad.grid(row=6, column=1, pady=10)
+BTNaumentar.grid(row=6, column=2, pady=10)
+BTNDecrementar.grid(row=7, column=2, pady=10)
 
 #Recorte
 LabelExt.grid(row=8, column=1)
-DesdeINP.grid(row=9, column=0)
-HastaINP.grid(row=9, column=1)
+DesdeINP.grid(row=9, column=0, padx=10)
+HastaINP.grid(row=9, column=1, padx=10)
 BTNCortar.grid(row=9, column=2)
 
 #Personalizado
-BTnEfecto.grid(row=10, column=2)
+BTnEfecto.grid(row=10, column=2, pady=10)
 
 Footer.grid(row=11, column=1)
-
 root.mainloop()
